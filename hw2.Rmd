@@ -13,9 +13,6 @@ library(readxl)
 
 ## Problem 1
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 
 ```{r}
@@ -51,12 +48,20 @@ precip_data = full_join(precip_data_2017, precip_data_2018, by = NULL) %>%
                         mutate(month = month.name[month])
 ```
 
-##Comments
+## Comments
 The number of observations in the Mr. Trash Wheel dataset is `r nrow(trash_data)`. The number of observations in the precipitation dataset is `r nrow(precip_data)`. Key variables in the Mr. Trash Wheel dataset include `r names(trash_data)`. Key variables in the precipitation dataset include `r names(precip_data)`. Total precipitation in 2018 is `r sum(precip_data_2018$total)`. The median number of sports balls in a dumpster in 2017 is `r median(pull(filter(trash_data, trash_data$year == 2017), sports_balls))`.
 
 
-
-```{r pressure, echo=FALSE}
+## Problem 2
+```{r problem 2}
+pols_month_data = read_csv("./data/fivethirtyeight_datasets/pols-month.csv", ) %>%
+                  janitor::clean_names() %>%
+                  separate(mon, into = c("year", "month", "day"), sep = "-", convert = TRUE) %>%    #break up mon into integer variables
+                  mutate(month = month.name[month]) %>%                                             #replace month number with month name
+                  mutate(president = ifelse(prez_dem == 0, "gop", "dem")) %>%                       #create new variable president
+                  select(-prez_dem) %>%                                                             #remove prez_dem, prez_gop, day
+                  select(-prez_gop) %>%
+                  select(-day)
 
 ```
 
