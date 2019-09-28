@@ -11,7 +11,7 @@ library(tidyverse)
 library(readxl)
 ```
 
-## R Markdown
+## Problem 1
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
@@ -23,18 +23,33 @@ When you click the **Knit** button a document will be generated that includes bo
 
 trash_data = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "Mr. Trash Wheel", range = cell_cols("A:N"), 
                         col_names = TRUE, skip = 1) %>%
-                        janitor::clean_names()
-
+                        janitor::clean_names() %>%
+                        na.omit()
 # omit rows that do not include dumpster-specific data
-trash_data = na.omit(trash_data)
+
 
 # round the number of sports balls to the nearest integer
 trash_data$sports_balls = as.integer(round(trash_data$sports_balls))
 
 ```
 
-## Including Plots
+```{r}
 
+# read and clean precipitation data for 2017 and 2018
+precip_data_2017 = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2017 Precipitation", col_names = TRUE, skip = 1) %>%
+                              janitor::clean_names() %>%
+                              na.omit() %>%
+                              mutate(year = 2017)
+ 
+precip_data_2018 = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2018 Precipitation", col_names = TRUE, skip = 1) %>%
+                              janitor::clean_names() %>%
+                              na.omit() %>%
+                              mutate(year = 2018)
+
+# combine the two datasets
+precip_data = full_join(precip_data_2017, precip_data_2018, by = NULL) %>%
+                        mutate(month = month.name[month])
+```
 You can also embed plots, for example:
 
 ```{r pressure, echo=FALSE}
