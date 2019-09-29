@@ -91,5 +91,22 @@ unemployment_tidy_data =
     names_to = "month",
     values_to = "percentage_of_unemployment")
 
-  
+#merge snp into pols
+snp_pols_data = 
+  left_join(pols_month_data, snp_data, by = c("year", "month") )
+
+#merge unemployment into the result
+snp_pols_unemploy_data = 
+  left_join(snp_pols_data, unemployment_tidy_data, by = c("year", "month"))
+
 ```
+## Comments
+**pols_month_data** contains 822 observations of 7 variables related to the number of senators, governors and representatives who are democratic or republican at any given time.
+**snp_data** contains 787 observations of the date and the closing values of the Standard & Poor's stock index on the associated date.
+**unemployment_tidy_data** and **unemployment_data** contains 68 observations of the percentage of unemployment in each month of the associated year.
+**snp_pols_data** contains the observations from both **pols_month_data** and **snp_data**.
+**snp_pols_unemploy_data** contains the observations from all of **pol_month_data**, **snp_data** and **unemployment_tidy_data**.
+
+The resulting dataset has `r nrow(snp_pols_unemploy_data)` rows and `r ncol(snp_pols_unemploy_data)` columns.
+Range of years is from `r min(snp_pols_unemploy_data$year)` to `r max(snp_pols_unemploy_data$year)`.
+Names of key variables include `r names(snp_pols_unemploy_data)`.

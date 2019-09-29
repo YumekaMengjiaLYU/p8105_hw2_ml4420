@@ -5,15 +5,6 @@ Mengjia Lyu
 
 ## Problem 1
 
-This is an R Markdown document. Markdown is a simple formatting syntax
-for authoring HTML, PDF, and MS Word documents. For more details on
-using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that
-includes both content as well as the output of any embedded R code
-chunks within the document. You can embed an R code chunk like
-this:
-
 ``` r
 trash_data = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "Mr. Trash Wheel", range = cell_cols("A:N"), 
                         col_names = TRUE, skip = 1) %>%
@@ -45,12 +36,117 @@ precip_data = full_join(precip_data_2017, precip_data_2018, by = NULL) %>%
 
     ## Joining, by = c("month", "total", "year")
 
-\#\#Comments The number of observations in the Mr. Trash Wheel dataset
-is 285. The number of observations in the precipitation dataset is 19.
-Key variables in the Mr. Trash Wheel dataset include dumpster, month,
-year, date, weight\_tons, volume\_cubic\_yards, plastic\_bottles,
-polystyrene, cigarette\_butts, glass\_bottles, grocery\_bags,
-chip\_bags, sports\_balls, homes\_powered. Key variables in the
-precipitation dataset include month, total, year. Total precipitation in
-2018 is 23.5. The median number of sports balls in a dumpster in 2017 is
+## Comments
+
+The number of observations in the Mr. Trash Wheel dataset is 285. The
+number of observations in the precipitation dataset is 19. Key variables
+in the Mr. Trash Wheel dataset include dumpster, month, year, date,
+weight\_tons, volume\_cubic\_yards, plastic\_bottles, polystyrene,
+cigarette\_butts, glass\_bottles, grocery\_bags, chip\_bags,
+sports\_balls, homes\_powered. Key variables in the precipitation
+dataset include month, total, year. Total precipitation in 2018 is 23.5.
+The median number of sports balls in a dumpster in 2017 is
 8.
+
+## Problem 2
+
+``` r
+pols_month_data = read_csv("./data/fivethirtyeight_datasets/pols-month.csv") %>%
+                  janitor::clean_names() %>%
+                  separate(mon, into = c("year", "month", "day"), sep = "-", convert = TRUE) %>%    #break up mon into integer variables
+                  mutate(month = month.name[month]) %>%                                             #replace month number with month name
+                  mutate(president = ifelse(prez_dem == 0, "gop", "dem")) %>%                       #create new variable president
+                  select(-prez_dem) %>%                                                             #remove prez_dem, prez_gop, day
+                  select(-prez_gop) %>%
+                  select(-day)
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   mon = col_date(format = ""),
+    ##   prez_gop = col_double(),
+    ##   gov_gop = col_double(),
+    ##   sen_gop = col_double(),
+    ##   rep_gop = col_double(),
+    ##   prez_dem = col_double(),
+    ##   gov_dem = col_double(),
+    ##   sen_dem = col_double(),
+    ##   rep_dem = col_double()
+    ## )
+
+``` r
+snp_data = read_csv("./data/fivethirtyeight_datasets/snp.csv") %>%
+           janitor::clean_names() %>%
+           separate(date, into = c("month", "day", "year"), sep = "/", convert = TRUE) %>%          #arrange according to year and month
+           mutate(month = month.name[month]) %>% 
+           select(year, month, everything()) %>%
+           select(-day)
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   date = col_character(),
+    ##   close = col_double()
+    ## )
+
+``` r
+unemployment_data = read_csv("./data/fivethirtyeight_datasets/unemployment.csv") %>%
+                    janitor::clean_names() 
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   Year = col_double(),
+    ##   Jan = col_double(),
+    ##   Feb = col_double(),
+    ##   Mar = col_double(),
+    ##   Apr = col_double(),
+    ##   May = col_double(),
+    ##   Jun = col_double(),
+    ##   Jul = col_double(),
+    ##   Aug = col_double(),
+    ##   Sep = col_double(),
+    ##   Oct = col_double(),
+    ##   Nov = col_double(),
+    ##   Dec = col_double()
+    ## )
+
+``` r
+colnames(unemployment_data) = c("year", "January", "February", "March", "April", "May", "June",
+                                   "July", "August", "September", "October", "November", "December")
+
+  
+unemployment_tidy_data = 
+  pivot_longer(
+    unemployment_data,
+    January:December,
+    names_to = "month",
+    values_to = "percentage_of_unemployment")
+
+#merge snp into pols
+snp_pols_data = 
+  left_join(pols_month_data, snp_data, by = c("year", "month") )
+
+#merge unemployment into the result
+snp_pols_unemploy_data = 
+  left_join(snp_pols_data, unemployment_tidy_data, by = c("year", "month"))
+```
+
+## Comments
+
+**pols\_month\_data** contains 822 observations of 7 variables related
+to the number of senators, governors and representatives who are
+democratic or republican at any given time. **snp\_data** contains 787
+observations of the date and the closing values of the Standard & Poor’s
+stock index on the associated date. **unemployment\_tidy\_data** and
+**unemployment\_data** contains 68 observations of the percentage of
+unemployment in each month of the associated year. **snp\_pols\_data**
+contains the observations from both **pols\_month\_data** and
+**snp\_data**. **snp\_pols\_unemploy\_data** contains the observations
+from all of **pol\_month\_data**, **snp\_data** and
+**unemployment\_tidy\_data**.
+
+The resulting dataset has 822 rows and 11 columns. Range of years is
+from 1947 to 2015. Names of key variables include year, month, gov\_gop,
+sen\_gop, rep\_gop, gov\_dem, sen\_dem, rep\_dem, president, close,
+percentage\_of\_unemployment.
