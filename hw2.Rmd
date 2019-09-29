@@ -69,7 +69,27 @@ pols_month_data = read_csv("./data/fivethirtyeight_datasets/pols-month.csv") %>%
 snp_data = read_csv("./data/fivethirtyeight_datasets/snp.csv") %>%
            janitor::clean_names() %>%
            separate(date, into = c("month", "day", "year"), sep = "/", convert = TRUE) %>%          #arrange according to year and month
+           mutate(month = month.name[month]) %>% 
            select(year, month, everything()) %>%
            select(-day)
 
+```
+
+```{r problem 2 part 3}
+unemployment_data = read_csv("./data/fivethirtyeight_datasets/unemployment.csv") %>%
+                    janitor::clean_names() 
+                    
+  
+colnames(unemployment_data) = c("year", "January", "February", "March", "April", "May", "June",
+                                   "July", "August", "September", "October", "November", "December")
+
+  
+unemployment_tidy_data = 
+  pivot_longer(
+    unemployment_data,
+    January:December,
+    names_to = "month",
+    values_to = "percentage_of_unemployment")
+
+  
 ```
