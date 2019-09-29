@@ -53,8 +53,8 @@ The number of observations in the Mr. Trash Wheel dataset is `r nrow(trash_data)
 
 
 ## Problem 2
-```{r problem 2}
-pols_month_data = read_csv("./data/fivethirtyeight_datasets/pols-month.csv", ) %>%
+```{r problem 2 part 1}
+pols_month_data = read_csv("./data/fivethirtyeight_datasets/pols-month.csv") %>%
                   janitor::clean_names() %>%
                   separate(mon, into = c("year", "month", "day"), sep = "-", convert = TRUE) %>%    #break up mon into integer variables
                   mutate(month = month.name[month]) %>%                                             #replace month number with month name
@@ -65,4 +65,11 @@ pols_month_data = read_csv("./data/fivethirtyeight_datasets/pols-month.csv", ) %
 
 ```
 
+```{r problem 2 part 2}
+snp_data = read_csv("./data/fivethirtyeight_datasets/snp.csv") %>%
+           janitor::clean_names() %>%
+           separate(date, into = c("month", "day", "year"), sep = "/", convert = TRUE) %>%          #arrange according to year and month
+           select(year, month, everything()) %>%
+           select(-day)
 
+```
