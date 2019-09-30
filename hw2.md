@@ -150,3 +150,79 @@ The resulting dataset has 822 rows and 11 columns. Range of years is
 from 1947 to 2015. Names of key variables include year, month, gov\_gop,
 sen\_gop, rep\_gop, gov\_dem, sen\_dem, rep\_dem, president, close,
 percentage\_of\_unemployment.
+
+## Problem 3
+
+``` r
+library(tools)
+baby_names_data = read_csv("./data/Popular_Baby_Names.csv") %>%
+                  janitor::clean_names() %>%
+                  mutate(gender = str_replace(gender, "FEMALE", "Female")) %>%
+                  mutate(gender = str_replace(gender, "MALE", "Male"))
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   `Year of Birth` = col_double(),
+    ##   Gender = col_character(),
+    ##   Ethnicity = col_character(),
+    ##   `Child's First Name` = col_character(),
+    ##   Count = col_double(),
+    ##   Rank = col_double()
+    ## )
+
+``` r
+# change names to proper format
+baby_names_data$childs_first_name = toTitleCase(tolower(baby_names_data$childs_first_name))
+
+# change ethnicity to proper format
+baby_names_data$ethnicity = str_replace_all(baby_names_data$ethnicity, "PACI$", "PACIFIC ISLANDER")
+baby_names_data$ethnicity = str_replace_all(baby_names_data$ethnicity, "HISP$", "HISPANIC")
+baby_names_data$ethnicity = toTitleCase(tolower(baby_names_data$ethnicity))
+
+# remove duplicate rows
+distinct(baby_names_data)                                                   
+```
+
+    ## # A tibble: 12,181 x 6
+    ##    year_of_birth gender ethnicity              childs_first_na… count  rank
+    ##            <dbl> <chr>  <chr>                  <chr>            <dbl> <dbl>
+    ##  1          2016 Female Asian and Pacific Isl… Olivia             172     1
+    ##  2          2016 Female Asian and Pacific Isl… Chloe              112     2
+    ##  3          2016 Female Asian and Pacific Isl… Sophia             104     3
+    ##  4          2016 Female Asian and Pacific Isl… Emily               99     4
+    ##  5          2016 Female Asian and Pacific Isl… Emma                99     4
+    ##  6          2016 Female Asian and Pacific Isl… Mia                 79     5
+    ##  7          2016 Female Asian and Pacific Isl… Charlotte           59     6
+    ##  8          2016 Female Asian and Pacific Isl… Sarah               57     7
+    ##  9          2016 Female Asian and Pacific Isl… Isabella            56     8
+    ## 10          2016 Female Asian and Pacific Isl… Hannah              56     8
+    ## # … with 12,171 more rows
+
+## Plotting
+
+``` r
+library(arsenal)
+
+olivia_data = baby_names_data[which(baby_names_data$childs_first_name == "Olivia"), ] %>%
+              select(-gender) %>%
+              select(-childs_first_name) %>%
+              select(-count) %>%
+              distinct()
+
+olivia_tidy_data = pivot_wider(
+  olivia_data,
+  names_from = year_of_birth,
+  values_from = rank            # rank in popularity of the name "Olivia" over time    
+)
+
+# create a reader-friendly table
+knitr::kable(olivia_tidy_data)
+```
+
+| ethnicity                  | 2016 | 2015 | 2014 | 2013 | 2012 | 2011 |
+| :------------------------- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Asian and Pacific Islander |    1 |    1 |    1 |    3 |    3 |    4 |
+| Black Non Hispanic         |    8 |    4 |    8 |    6 |    8 |   10 |
+| Hispanic                   |   13 |   16 |   16 |   22 |   22 |   18 |
+| White Non Hispanic         |    1 |    1 |    1 |    1 |    4 |    2 |

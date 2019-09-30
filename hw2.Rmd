@@ -130,10 +130,28 @@ baby_names_data$ethnicity = toTitleCase(tolower(baby_names_data$ethnicity))
 
 # remove duplicate rows
 distinct(baby_names_data)                                                   
+```
 
-                  
-                  
-#str_replace_all(baby_names_data$gender, "FEMALE", "Female")
-#str_replace_all(baby_names_data$gender, "MALE", "Male")
+## Plotting
+
+```{r}
+library(arsenal)
+
+olivia_data = baby_names_data[which(baby_names_data$childs_first_name == "Olivia"), ] %>%
+              select(-gender) %>%
+              select(-childs_first_name) %>%
+              select(-count) %>%
+              distinct()
+
+olivia_tidy_data = pivot_wider(
+  olivia_data,
+  names_from = year_of_birth,
+  values_from = rank            # rank in popularity of the name "Olivia" over time    
+)
+
+# create a reader-friendly table
+knitr::kable(olivia_tidy_data)
+          
+
 
 ```
