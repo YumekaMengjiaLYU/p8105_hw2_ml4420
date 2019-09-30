@@ -150,8 +150,17 @@ olivia_tidy_data = pivot_wider(
 )
 
 # create a reader-friendly table
+
 knitr::kable(olivia_tidy_data)
           
+# most popular name among male children over time
+most_ppl_male_name_data = baby_names_data[which(baby_names_data$gender == "Male" &
+                                                baby_names_data$ethnicity == "White Non Hispanic" &
+                                                baby_names_data$year_of_birth == 2016), ] %>%
+                                          select(-year_of_birth) %>%
+                                          select(-gender) %>%
+                                          select(-ethnicity) %>%
+                                          select(-count)
 
 
 ```
