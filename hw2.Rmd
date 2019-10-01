@@ -114,12 +114,12 @@ Names of key variables include `r names(snp_pols_unemploy_data)`.
 ## Problem 3
 ```{r}
 
-library(tools)
+#library(tools)
 baby_names_data = read_csv("./data/Popular_Baby_Names.csv") %>%
                   janitor::clean_names() %>%
                   mutate(gender = str_replace(gender, "FEMALE", "Female")) %>%
-                  mutate(gender = str_replace(gender, "MALE", "Male"))
-
+                  mutate(gender = str_replace(gender, "MALE", "Male")) %>%
+                  mutate(childs_first_name = str_to_lower(childs_first_name))
 # change names to proper format
 baby_names_data$childs_first_name = toTitleCase(tolower(baby_names_data$childs_first_name))
 
@@ -159,8 +159,9 @@ most_ppl_male_name_data = baby_names_data[which(baby_names_data$gender == "Male"
                                                 baby_names_data$year_of_birth == 2016), ] %>%
                                           select(-year_of_birth) %>%
                                           select(-gender) %>%
-                                          select(-ethnicity) %>%
-                                          select(-count)
-
+                                          select(-ethnicity)
+                                          
+## scatterplot
+ggplot(most_ppl_male_name_data, aes(x = rank, y = count)) + geom_point()
 
 ```

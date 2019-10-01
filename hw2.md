@@ -217,6 +217,7 @@ olivia_tidy_data = pivot_wider(
 )
 
 # create a reader-friendly table
+
 knitr::kable(olivia_tidy_data)
 ```
 
@@ -226,3 +227,18 @@ knitr::kable(olivia_tidy_data)
 | Black Non Hispanic         |    8 |    4 |    8 |    6 |    8 |   10 |
 | Hispanic                   |   13 |   16 |   16 |   22 |   22 |   18 |
 | White Non Hispanic         |    1 |    1 |    1 |    1 |    4 |    2 |
+
+``` r
+# most popular name among male children over time
+most_ppl_male_name_data = baby_names_data[which(baby_names_data$gender == "Male" &
+                                                baby_names_data$ethnicity == "White Non Hispanic" &
+                                                baby_names_data$year_of_birth == 2016), ] %>%
+                                          select(-year_of_birth) %>%
+                                          select(-gender) %>%
+                                          select(-ethnicity)
+                                          
+## scatterplot
+ggplot(most_ppl_male_name_data, aes(x = rank, y = count)) + geom_point(aes(color = childs_first_name))
+```
+
+![](hw2_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
