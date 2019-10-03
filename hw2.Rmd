@@ -18,7 +18,7 @@ library(readxl)
 ```{r}
 
 
-trash_data = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "Mr. Trash Wheel", range = cell_cols("A:N"), 
+trash_data = read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "Mr. Trash Wheel", range = cell_cols("A:N"), 
                         col_names = TRUE, skip = 1) %>%
                         janitor::clean_names() %>%
                         na.omit()
@@ -33,12 +33,12 @@ trash_data$sports_balls = as.integer(round(trash_data$sports_balls))
 ```{r}
 
 # read and clean precipitation data for 2017 and 2018
-precip_data_2017 = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2017 Precipitation", col_names = TRUE, skip = 1) %>%
+precip_data_2017 = read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "2017 Precipitation", col_names = TRUE, skip = 1) %>%
                               janitor::clean_names() %>%
                               na.omit() %>%
                               mutate(year = 2017)
  
-precip_data_2018 = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2018 Precipitation", col_names = TRUE, skip = 1) %>%
+precip_data_2018 = read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "2018 Precipitation", col_names = TRUE, skip = 1) %>%
                               janitor::clean_names() %>%
                               na.omit() %>%
                               mutate(year = 2018)
@@ -49,7 +49,7 @@ precip_data = full_join(precip_data_2017, precip_data_2018, by = NULL) %>%
 ```
 
 ## Comments
-The number of observations in the Mr. Trash Wheel dataset is `r nrow(trash_data)`. The number of observations in the precipitation dataset is `r nrow(precip_data)`. Key variables in the Mr. Trash Wheel dataset include `r names(trash_data)`. Key variables in the precipitation dataset include `r names(precip_data)`. Total precipitation in 2018 is `r sum(precip_data_2018$total)`. The median number of sports balls in a dumpster in 2017 is `r median(pull(filter(trash_data, trash_data$year == 2017), sports_balls))`.
+The number of observations in the Mr. Trash Wheel dataset is `r nrow(trash_data)`. The number of observations in the precipitation dataset is `r nrow(precip_data)`. Key variables in the Mr. Trash Wheel dataset include **`r names(trash_data)`**. Key variables in the precipitation dataset include **`r names(precip_data)`**. Total precipitation in 2018 is `r sum(precip_data_2018$total)`. The median number of sports balls in a dumpster in 2017 is `r median(pull(filter(trash_data, trash_data$year == 2017), sports_balls))`.
 
 
 ## Problem 2
@@ -101,13 +101,13 @@ snp_pols_unemploy_data =
 
 ```
 ## Comments
-**pols_month_data** contains 822 observations of 7 variables related to the number of senators, governors and representatives who are democratic or republican at any given time.
-**snp_data** contains 787 observations of the date and the closing values of the Standard & Poor's stock index on the associated date.
-**unemployment_tidy_data** and **unemployment_data** contains 68 observations of the percentage of unemployment in each month of the associated year.
-**snp_pols_data** contains the observations from both **pols_month_data** and **snp_data**.
-**snp_pols_unemploy_data** contains the observations from all of **pol_month_data**, **snp_data** and **unemployment_tidy_data**.
+Dataset *pols_month_data* contains observations of 7 variables related to the number of senators, governors and representatives who are democratic or republican at any given time.
+Dataset *snp_data* contains observations of the date and the closing values of the Standard & Poor's stock index on the associated date.
+Dataset *unemployment_data* contains observations of the percentage of unemployment in each month of the associated year.
+Dataset *unemployment_tidy_data* is the lengthened and tidied version of dataset *unemployment_data*.
+Dataset *snp_pols_data* contains the observations from both dataset *pols_month_data* and dataset *snp_data*.
 
-The resulting dataset has `r nrow(snp_pols_unemploy_data)` rows and `r ncol(snp_pols_unemploy_data)` columns.
+The **resulting dataset** *snp_pols_unemploy_data* contains the observations from all of dataset *pol_month_data*, dataset *snp_data* and dataset *unemployment_tidy_data*. It has `r nrow(snp_pols_unemploy_data)` rows and `r ncol(snp_pols_unemploy_data)` columns.
 Range of years is from `r min(snp_pols_unemploy_data$year)` to `r max(snp_pols_unemploy_data$year)`.
 Names of key variables include `r names(snp_pols_unemploy_data)`.
 
@@ -119,14 +119,14 @@ baby_names_data = read_csv("./data/Popular_Baby_Names.csv") %>%
                   janitor::clean_names() %>%
                   mutate(gender = str_replace(gender, "FEMALE", "Female")) %>%
                   mutate(gender = str_replace(gender, "MALE", "Male")) %>%
-                  mutate(childs_first_name = str_to_lower(childs_first_name))
-# change names to proper format
-baby_names_data$childs_first_name = toTitleCase(tolower(baby_names_data$childs_first_name))
+                  mutate(childs_first_name = str_to_lower(childs_first_name)) %>%
+                  mutate(ethnicity = str_to_lower(ethnicity))  
+
 
 # change ethnicity to proper format
-baby_names_data$ethnicity = str_replace_all(baby_names_data$ethnicity, "PACI$", "PACIFIC ISLANDER")
-baby_names_data$ethnicity = str_replace_all(baby_names_data$ethnicity, "HISP$", "HISPANIC")
-baby_names_data$ethnicity = toTitleCase(tolower(baby_names_data$ethnicity))
+baby_names_data$ethnicity = str_replace_all(baby_names_data$ethnicity, "paci$", "pacific islander")
+baby_names_data$ethnicity = str_replace_all(baby_names_data$ethnicity, "hisp$", "hispanic")
+
 
 # remove duplicate rows
 distinct(baby_names_data)                                                   
@@ -137,7 +137,7 @@ distinct(baby_names_data)
 ```{r}
 library(arsenal)
 
-olivia_data = baby_names_data[which(baby_names_data$childs_first_name == "Olivia"), ] %>%
+olivia_data = baby_names_data[which(baby_names_data$childs_first_name == "olivia"), ] %>%
               select(-gender) %>%
               select(-childs_first_name) %>%
               select(-count) %>%
@@ -155,13 +155,16 @@ knitr::kable(olivia_tidy_data)
           
 # most popular name among male children over time
 most_ppl_male_name_data = baby_names_data[which(baby_names_data$gender == "Male" &
-                                                baby_names_data$ethnicity == "White Non Hispanic" &
+                                                baby_names_data$ethnicity == "white non hispanic" &
                                                 baby_names_data$year_of_birth == 2016), ] %>%
                                           select(-year_of_birth) %>%
                                           select(-gender) %>%
                                           select(-ethnicity)
                                           
 ## scatterplot
-ggplot(most_ppl_male_name_data, aes(x = rank, y = count)) + geom_point()
+ggplot(most_ppl_male_name_data, aes(x = rank, y = count)) + geom_point() + 
+       labs(title = "Name Statistics of White Non-Hispanic Male Children Born in 2016",
+            x = "rank in popularity of a name",
+            y = "number of children with a name")
 
 ```

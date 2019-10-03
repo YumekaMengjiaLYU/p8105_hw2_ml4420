@@ -6,7 +6,7 @@ Mengjia Lyu
 ## Problem 1
 
 ``` r
-trash_data = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "Mr. Trash Wheel", range = cell_cols("A:N"), 
+trash_data = read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "Mr. Trash Wheel", range = cell_cols("A:N"), 
                         col_names = TRUE, skip = 1) %>%
                         janitor::clean_names() %>%
                         na.omit()
@@ -19,12 +19,12 @@ trash_data$sports_balls = as.integer(round(trash_data$sports_balls))
 
 ``` r
 # read and clean precipitation data for 2017 and 2018
-precip_data_2017 = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2017 Precipitation", col_names = TRUE, skip = 1) %>%
+precip_data_2017 = read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "2017 Precipitation", col_names = TRUE, skip = 1) %>%
                               janitor::clean_names() %>%
                               na.omit() %>%
                               mutate(year = 2017)
  
-precip_data_2018 = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2018 Precipitation", col_names = TRUE, skip = 1) %>%
+precip_data_2018 = read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "2018 Precipitation", col_names = TRUE, skip = 1) %>%
                               janitor::clean_names() %>%
                               na.omit() %>%
                               mutate(year = 2018)
@@ -38,14 +38,14 @@ precip_data = full_join(precip_data_2017, precip_data_2018, by = NULL) %>%
 
 ## Comments
 
-The number of observations in the Mr. Trash Wheel dataset is 285. The
-number of observations in the precipitation dataset is 19. Key variables
-in the Mr. Trash Wheel dataset include dumpster, month, year, date,
+The number of observations in the Mr. Trash Wheel dataset is 344. The
+number of observations in the precipitation dataset is 24. Key variables
+in the Mr. Trash Wheel dataset include **dumpster, month, year, date,
 weight\_tons, volume\_cubic\_yards, plastic\_bottles, polystyrene,
 cigarette\_butts, glass\_bottles, grocery\_bags, chip\_bags,
-sports\_balls, homes\_powered. Key variables in the precipitation
-dataset include month, total, year. Total precipitation in 2018 is 23.5.
-The median number of sports balls in a dumpster in 2017 is
+sports\_balls, homes\_powered**. Key variables in the precipitation
+dataset include **month, total, year**. Total precipitation in 2018 is
+70.33. The median number of sports balls in a dumpster in 2017 is
 8.
 
 ## Problem 2
@@ -134,31 +134,34 @@ snp_pols_unemploy_data =
 
 ## Comments
 
-**pols\_month\_data** contains 822 observations of 7 variables related
+Dataset *pols\_month\_data* contains observations of 7 variables related
 to the number of senators, governors and representatives who are
-democratic or republican at any given time. **snp\_data** contains 787
+democratic or republican at any given time. Dataset *snp\_data* contains
 observations of the date and the closing values of the Standard & Poor’s
-stock index on the associated date. **unemployment\_tidy\_data** and
-**unemployment\_data** contains 68 observations of the percentage of
-unemployment in each month of the associated year. **snp\_pols\_data**
-contains the observations from both **pols\_month\_data** and
-**snp\_data**. **snp\_pols\_unemploy\_data** contains the observations
-from all of **pol\_month\_data**, **snp\_data** and
-**unemployment\_tidy\_data**.
+stock index on the associated date. Dataset *unemployment\_data*
+contains observations of the percentage of unemployment in each month of
+the associated year. Dataset *unemployment\_tidy\_data* is the
+lengthened and tidied version of dataset *unemployment\_data*. Dataset
+*snp\_pols\_data* contains the observations from both dataset
+*pols\_month\_data* and dataset *snp\_data*.
 
-The resulting dataset has 822 rows and 11 columns. Range of years is
-from 1947 to 2015. Names of key variables include year, month, gov\_gop,
-sen\_gop, rep\_gop, gov\_dem, sen\_dem, rep\_dem, president, close,
-percentage\_of\_unemployment.
+The **resulting dataset** *snp\_pols\_unemploy\_data* contains the
+observations from all of dataset *pol\_month\_data*, dataset *snp\_data*
+and dataset *unemployment\_tidy\_data*. It has 822 rows and 11 columns.
+Range of years is from 1947 to 2015. Names of key variables include
+year, month, gov\_gop, sen\_gop, rep\_gop, gov\_dem, sen\_dem, rep\_dem,
+president, close, percentage\_of\_unemployment.
 
 ## Problem 3
 
 ``` r
-library(tools)
+#library(tools)
 baby_names_data = read_csv("./data/Popular_Baby_Names.csv") %>%
                   janitor::clean_names() %>%
                   mutate(gender = str_replace(gender, "FEMALE", "Female")) %>%
-                  mutate(gender = str_replace(gender, "MALE", "Male"))
+                  mutate(gender = str_replace(gender, "MALE", "Male")) %>%
+                  mutate(childs_first_name = str_to_lower(childs_first_name)) %>%
+                  mutate(ethnicity = str_to_lower(ethnicity))  
 ```
 
     ## Parsed with column specification:
@@ -172,13 +175,10 @@ baby_names_data = read_csv("./data/Popular_Baby_Names.csv") %>%
     ## )
 
 ``` r
-# change names to proper format
-baby_names_data$childs_first_name = toTitleCase(tolower(baby_names_data$childs_first_name))
-
 # change ethnicity to proper format
-baby_names_data$ethnicity = str_replace_all(baby_names_data$ethnicity, "PACI$", "PACIFIC ISLANDER")
-baby_names_data$ethnicity = str_replace_all(baby_names_data$ethnicity, "HISP$", "HISPANIC")
-baby_names_data$ethnicity = toTitleCase(tolower(baby_names_data$ethnicity))
+baby_names_data$ethnicity = str_replace_all(baby_names_data$ethnicity, "paci$", "pacific islander")
+baby_names_data$ethnicity = str_replace_all(baby_names_data$ethnicity, "hisp$", "hispanic")
+
 
 # remove duplicate rows
 distinct(baby_names_data)                                                   
@@ -187,16 +187,16 @@ distinct(baby_names_data)
     ## # A tibble: 12,181 x 6
     ##    year_of_birth gender ethnicity              childs_first_na… count  rank
     ##            <dbl> <chr>  <chr>                  <chr>            <dbl> <dbl>
-    ##  1          2016 Female Asian and Pacific Isl… Olivia             172     1
-    ##  2          2016 Female Asian and Pacific Isl… Chloe              112     2
-    ##  3          2016 Female Asian and Pacific Isl… Sophia             104     3
-    ##  4          2016 Female Asian and Pacific Isl… Emily               99     4
-    ##  5          2016 Female Asian and Pacific Isl… Emma                99     4
-    ##  6          2016 Female Asian and Pacific Isl… Mia                 79     5
-    ##  7          2016 Female Asian and Pacific Isl… Charlotte           59     6
-    ##  8          2016 Female Asian and Pacific Isl… Sarah               57     7
-    ##  9          2016 Female Asian and Pacific Isl… Isabella            56     8
-    ## 10          2016 Female Asian and Pacific Isl… Hannah              56     8
+    ##  1          2016 Female asian and pacific isl… olivia             172     1
+    ##  2          2016 Female asian and pacific isl… chloe              112     2
+    ##  3          2016 Female asian and pacific isl… sophia             104     3
+    ##  4          2016 Female asian and pacific isl… emily               99     4
+    ##  5          2016 Female asian and pacific isl… emma                99     4
+    ##  6          2016 Female asian and pacific isl… mia                 79     5
+    ##  7          2016 Female asian and pacific isl… charlotte           59     6
+    ##  8          2016 Female asian and pacific isl… sarah               57     7
+    ##  9          2016 Female asian and pacific isl… isabella            56     8
+    ## 10          2016 Female asian and pacific isl… hannah              56     8
     ## # … with 12,171 more rows
 
 ## Plotting
@@ -204,7 +204,7 @@ distinct(baby_names_data)
 ``` r
 library(arsenal)
 
-olivia_data = baby_names_data[which(baby_names_data$childs_first_name == "Olivia"), ] %>%
+olivia_data = baby_names_data[which(baby_names_data$childs_first_name == "olivia"), ] %>%
               select(-gender) %>%
               select(-childs_first_name) %>%
               select(-count) %>%
@@ -223,22 +223,25 @@ knitr::kable(olivia_tidy_data)
 
 | ethnicity                  | 2016 | 2015 | 2014 | 2013 | 2012 | 2011 |
 | :------------------------- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Asian and Pacific Islander |    1 |    1 |    1 |    3 |    3 |    4 |
-| Black Non Hispanic         |    8 |    4 |    8 |    6 |    8 |   10 |
-| Hispanic                   |   13 |   16 |   16 |   22 |   22 |   18 |
-| White Non Hispanic         |    1 |    1 |    1 |    1 |    4 |    2 |
+| asian and pacific islander |    1 |    1 |    1 |    3 |    3 |    4 |
+| black non hispanic         |    8 |    4 |    8 |    6 |    8 |   10 |
+| hispanic                   |   13 |   16 |   16 |   22 |   22 |   18 |
+| white non hispanic         |    1 |    1 |    1 |    1 |    4 |    2 |
 
 ``` r
 # most popular name among male children over time
 most_ppl_male_name_data = baby_names_data[which(baby_names_data$gender == "Male" &
-                                                baby_names_data$ethnicity == "White Non Hispanic" &
+                                                baby_names_data$ethnicity == "white non hispanic" &
                                                 baby_names_data$year_of_birth == 2016), ] %>%
                                           select(-year_of_birth) %>%
                                           select(-gender) %>%
                                           select(-ethnicity)
                                           
 ## scatterplot
-ggplot(most_ppl_male_name_data, aes(x = rank, y = count)) + geom_point(aes(color = childs_first_name))
+ggplot(most_ppl_male_name_data, aes(x = rank, y = count)) + geom_point() + 
+       labs(title = "Name Statistics of White Non-Hispanic Male Children Born in 2016",
+            x = "rank in popularity of a name",
+            y = "number of children with a name")
 ```
 
 ![](hw2_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
